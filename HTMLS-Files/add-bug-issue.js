@@ -1,121 +1,129 @@
-function user() {
-    let accounts = [
-        {
-            ID: 4,
-            names: `Lebo`,
-            surname:`Ngek`,
-            email:`lebo@email.com`,
-            username: `@lebzange`
-        },
-        {
-            ID: 2,
-            names: `Keke`,
-            surname:`Nontu`,
-            email:`keke@email.com`,
-            username: `@kekenontu`
-        },
-        {
-            ID: 7,
-            names: `Pauline`,
-            surname:`Katey`,
-            email:`pauline@email.com`,
-            username: `@paulinein_line`
-        },
-        {
-            ID: 15,
-            names: `Brandon`,
-            surname:`Hartley`,
-            email:`brandon@email.com`,
-            username: `@branpack_01`
-        }
-    ]
-    return accounts
-}
-console.log(user()[0].email);
 
-document.getElementById('issueInputForm').addEventListener('submit', saveIssue);
 
 function saveIssue(e) {
-  let issueDesc = document.getElementById('issueDescInput').value;
-  let issueSeverity = document.getElementById('issueSeverityInput').value;
-  let issueAssignedTo = document.getElementById('issueAssignedToInput').value;
-  let issueId = chance.guid();
-  let issueStatus = 'Open';
-  
-  let issue = {
-    id: issueId,
-    description: issueDesc,
-    severity: issueSeverity,
-    assignedTo: issueAssignedTo,
-    status: issueStatus
-  }
-  
-  if (localStorage.getItem('issues') == null) {
-    let issues = [];
-    issues.push(issue);
-    localStorage.setItem('issues', JSON.stringify(issues));    
-  }
-  else {
-    let issues = JSON.parse(localStorage.getItem('issues'));
-    issues.push(issue);
-    localStorage.setItem('issues', JSON.stringify(issues));
-  }
-  
-  document.getElementById('issueInputForm').reset();
-  
-  fetchIssues();
-  
-  e.preventDefault();
-}
+    let empname = document.getElementById("name").value
+    let empid = document.getElementById("empid").value
+    let department = document.getElementById("department").value
+	let description = document.getElementById("description").value
 
-function setStatusClosed(id) {
-  let issues = JSON.parse(localStorage.getItem('issues'));
-  for (let i = 0; i < issues.length; i++) {
-    if (issues[i].id == id) {
-      issues[i].status = 'Closed';
-    }
-  }
-  
-  localStorage.setItem('issues', JSON.stringify(issues));
-  
-  fetchIssues();
-}
-
-function deleteIssue(id) {
-  let issues = JSON.parse(localStorage.getItem('issues'));
-  for (let i = 0; i < issues.length; i++) {
-    if (issues[i].id == id) {
-      issues.splice(i, 1);
-    }
-  }
-  
-  localStorage.setItem('issues', JSON.stringify(issues));
-  
-  fetchIssues();
-}
-
-function fetchIssues() {
-  let issues = JSON.parse(localStorage.getItem('issues'));
-  
-  let issuesList = document.getElementById('issuesList');
-  
-  issuesList.innerHTML = '';
-  
-  for (let i = 0; i < issues.length; i++) {
-    let id = issues[i].id;
-    let desc = issues[i].description;
-    let severity = issues[i].severity;
-    let assignedTo = issues[i].assignedTo;
-    let status = issues[i].status;
+    let issueId = chance.guid()
+	let ticketNo = chance.zip()
+	
+	let assignedFirst = chance.first()
+	let assignedLast = chance.last()
+	let assigned = assignedFirst + " " + assignedLast
+	let assignedContact = assignedFirst.toLowerCase() + assignedLast.toLowerCase()
     
-    issuesList.innerHTML += '<div class = "well">' +
-                        '<h6>Issue ID: ' + id + '</h6>' + 
-                        '<p><span class = "label label-info">' + status + '</span></p>' +
-                        '<h3>' + desc + '</h3>' +
-                        '<p><span class = "glypicon glypicon-time"></span> ' + severity + '</p>' +
-                        '<p><span class = "glypicon glypicon-user"></span> ' + assignedTo + '</p>' + 
-                        '<a href = "#" onclick = "setStatusClosed(\''+id+'\')" class = "btn btn-warning">Close</a> ' +
-                        '<a href = "#" onclick = "deleteIssue(\''+id+'\')" class = "btn btn-danger">Delete</a>' +
-                         '</div>';
-  }
+	let issueStatus = "Open"
+
+
+    let issue = {
+        id: issueId,
+        ticket: ticketNo,
+		name: empname,
+        empid: empid,
+        dep: department,
+		desc: description,
+		assist: assigned,
+		assistEmail: assignedContact,
+        status: issueStatus
+    }
+
+    if (localStorage.getItem("issues") == null) {
+        let issues = []
+        issues.push(issue)
+        localStorage.setItem("issues", JSON.stringify(issues))
+    } else {
+        let issues = JSON.parse(localStorage.getItem("issues"))
+        issues.push(issue);
+        localStorage.setItem("issues", JSON.stringify(issues))
+    }
+
+    document.getElementById("issueForm").reset()
+
+	e.preventDefault()
+
+    getAllIssues()
+}
+
+let setStatusClosed = (id) => {
+    let issues = JSON.parse(localStorage.getItem("issues"))
+
+    for (let i = 0; i < issues.length; i++) {
+		if (issues[i].id == id) {
+			issues[i].status = "Closed"
+		}
+    }
+
+    localStorage.setItem("issues", JSON.stringify(issues))
+
+    getAllIssues()
+}
+
+let deleteIssue = (id) => {
+	let issues = JSON.parse(localStorage.getItem("issues"))
+
+	for (let i = 0; i < issues.length; i++) {
+		if (issues[i].id == id) {
+			issues.splice(i, 1);
+		}
+	}
+
+	localStorage.setItem("issues", JSON.stringify(issues))
+
+	getAllIssues()
+}
+
+let validateBtn = () => {
+	let empname = document.getElementById("name").value
+    let empid = document.getElementById("empid").value
+    let department = document.getElementById("department").value
+	let description = document.getElementById("description").value
+
+	let submitBtn = document.getElementById("mainBtn")
+	let mustMessage = document.getElementById("must")
+
+	if(empname != "" && empid != "" && department != "none" && description != "") {
+		submitBtn.disabled = false
+		mustMessage.innerHTML = ""
+	} else {
+		submitBtn.disabled = true
+		mustMessage.innerHTML = "asterick (*) marked fields are required!"
+	}
+}
+
+let getAllIssues = () => {
+	let issues = JSON.parse(localStorage.getItem("issues"))
+	let issuesList = document.getElementById("issuesList")
+
+	issuesList.innerHTML = ''
+
+  	for (let i = 0; i < issues.length; i++) {
+		if(issues[i].status == "Open") {
+			issuesList.innerHTML += '<div class="card">' +
+										'<div class="card-body">'+
+											'<h6>Issue ID: ' + issues[i].id + '</h6>' +
+											'<h5>Ticket No.: <span id="ticket">' + issues[i].ticket + '</span></h5>' +
+											'<p><span class="badge rounded-pill bg-success text-light">' + issues[i].status + '</span></p>' +
+											'<h3>' + issues[i].desc + '</h3>' +
+											'<p><b>Issued By</b>: ' + issues[i].name + ' - ' + issues[i].empid + '</p>' +
+											'<p><b>Assigned To</b>: ' + issues[i].assist + ' (' + issues[i].assistEmail + '@gmail.com)</p>' +
+											'<button class="btn btn-warning" onclick="setStatusClosed(\''+ issues[i].id +'\')">Close</button> ' +
+											'<button class="btn btn-danger" onclick="deleteIssue(\''+ issues[i].id +'\')">Delete</button> ' +
+										'</div>' +
+									'</div><br>'
+		} else {
+			issuesList.innerHTML += '<div class="card">' + 
+										'<div class="card-body">'+
+											'<h6>Issue ID: ' + issues[i].id + '</h6>' +
+											'<h5>Ticket No.: ' + issues[i].ticket + '</h5>' +
+											'<p><span class="badge rounded-pill bg-danger text-light">' + issues[i].status + '</span></p>' +
+											'<h3>' + issues[i].desc + '</h3>' +
+											'<p><b>Issued By:</b> ' + issues[i].name + ' - ' + issues[i].empid + '</p>' +
+											'<p><b>Assigned To</b>: ' + issues[i].assist + ' (' + issues[i].assistEmail + '@gmail.com)</p>' +
+											'<button class="btn btn-danger" onclick="deleteIssue(\''+ issues[i].id +'\')">Delete</button>' +
+										'</div>' +
+									'</div><br>'
+		}
+  	}
 }
